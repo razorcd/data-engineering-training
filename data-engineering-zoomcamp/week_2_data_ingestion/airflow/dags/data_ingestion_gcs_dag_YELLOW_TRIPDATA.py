@@ -58,7 +58,7 @@ def upload_to_gcs(bucket, object_name, local_file):
 default_args = {
     "owner": "airflow",
     "start_date": datetime(2019, 1, 1),
-    "end_date": datetime(2019, 1, 31),
+    "end_date": datetime(2020, 12, 31),
     # "end_date": datetime(2020, 12, 31),
     "depends_on_past": False,
     "retries": 1,
