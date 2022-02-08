@@ -9,6 +9,7 @@ from airflow.operators.python import PythonOperator
 from datetime import datetime
 from google.cloud import storage
 from airflow.providers.google.cloud.operators.bigquery import BigQueryCreateExternalTableOperator
+from airflow.contrib.operators.gcs_to_bq import GoogleCloudStorageToBigQueryOperator
 import pyarrow.csv as pv
 import pyarrow.parquet as pq
 
@@ -120,5 +121,20 @@ with DAG(
     )
 
 
-    download_dataset_task >> format_to_parquet_task >> local_to_gcs_task >> bigquery_external_table_task
+
+    bigquery_update_table_task = GoogleCloudStorageToBigQueryOperator(
+        task_id = 'bigquery_update_table_task',
+        bucket = BUCKET,
+        source_objects = [f"raw_yellow_tripdata/{parquet_file}"],
+        destination_project_dataset_table = f'{PROJECT_ID}:{BIGQUERY_DATASET}.yellow_tripdata2',
+        # schema_object = 'cities/us_cities_demo.json',
+        write_disposition='WRITE_APPEND',
+        source_format = 'parquet',
+        skip_leading_rows = 1,
+        autodetect = True
+    )
+
+
+    # download_dataset_task >> format_to_parquet_task >> local_to_gcs_task >> 
+    bigquery_update_table_task
     # test_task8

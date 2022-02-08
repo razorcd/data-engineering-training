@@ -9,6 +9,7 @@ from airflow.operators.python import PythonOperator
 from datetime import datetime
 from google.cloud import storage
 from airflow.providers.google.cloud.operators.bigquery import BigQueryCreateExternalTableOperator
+from airflow.contrib.operators.gcs_to_bq import GoogleCloudStorageToBigQueryOperator
 import pyarrow.csv as pv
 import pyarrow.parquet as pq
 
@@ -104,21 +105,34 @@ with DAG(
         },
     )
 
-    bigquery_external_table_task = BigQueryCreateExternalTableOperator(
-        task_id="bigquery_external_table_task",
-        table_resource={
-            "tableReference": {
-                "projectId": PROJECT_ID,
-                "datasetId": BIGQUERY_DATASET,
-                "tableId": "fhv",
-            },
-            "externalDataConfiguration": {
-                "sourceFormat": "PARQUET",
-                "sourceUris": [f"gs://{BUCKET}/raw_fhv/{parquet_file}"],
-            },
-        },
+    # bigquery_external_table_task = BigQueryCreateExternalTableOperator(
+    #     task_id="bigquery_external_table_task",
+    #     table_resource={
+    #         "tableReference": {
+    #             "projectId": PROJECT_ID,
+    #             "datasetId": BIGQUERY_DATASET,
+    #             "tableId": "fhv",
+    #         },
+    #         "externalDataConfiguration": {
+    #             "sourceFormat": "PARQUET",
+    #             "sourceUris": [f"gs://{BUCKET}/raw_fhv/{parquet_file}"],
+    #         },
+    #     },
+    # )
+
+
+    bigquery_update_table_task = GoogleCloudStorageToBigQueryOperator(
+        task_id = 'bigquery_update_table_task',
+        bucket = BUCKET,
+        source_objects = [f"raw_fhv/{parquet_file}"],
+        destination_project_dataset_table = f'{PROJECT_ID}:{BIGQUERY_DATASET}.fhv2',
+        # schema_object = 'cities/us_cities_demo.json',
+        write_disposition='WRITE_APPEND',
+        source_format = 'parquet',
+        skip_leading_rows = 1,
+        autodetect = True
     )
 
 
-    download_dataset_task >> format_to_parquet_task >> local_to_gcs_task >> bigquery_external_table_task
+    download_dataset_task >> format_to_parquet_task >> local_to_gcs_task >> bigquery_update_table_task
     # test_task8
