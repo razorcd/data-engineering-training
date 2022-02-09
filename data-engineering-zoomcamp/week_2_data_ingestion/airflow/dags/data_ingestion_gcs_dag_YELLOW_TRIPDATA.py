@@ -67,19 +67,13 @@ default_args = {
 
 # NOTE: DAG declaration - using a Context Manager (an implicit way)
 with DAG(
-    dag_id="data_ingestion_gcs_dag_YELLOW_TRIPDATA_2",
+    dag_id="data_ingestion_gcs_dag_YELLOW_TRIPDATA_4",
     schedule_interval="@monthly",
     default_args=default_args,
     catchup=True,
     max_active_runs=1,
     tags=['dtc-de'],
 ) as dag:
-
-    # test_task8 = BashOperator(
-    #     task_id="test_task8",
-    #     # bash_command="echo value: {{ dag_run.conf['input_data_date'] }}"
-    #     bash_command=f"echo value: { file_date }"
-    # )
 
     download_dataset_task = BashOperator(
         task_id="download_dataset_task",
@@ -105,28 +99,12 @@ with DAG(
         },
     )
 
-    bigquery_external_table_task = BigQueryCreateExternalTableOperator(
-        task_id="bigquery_external_table_task",
-        table_resource={
-            "tableReference": {
-                "projectId": PROJECT_ID,
-                "datasetId": BIGQUERY_DATASET,
-                "tableId": "yellow_tripdata",
-            },
-            "externalDataConfiguration": {
-                "sourceFormat": "PARQUET",
-                "sourceUris": [f"gs://{BUCKET}/raw_yellow_tripdata/{parquet_file}"],
-            },
-        },
-    )
-
-
 
     bigquery_update_table_task = GoogleCloudStorageToBigQueryOperator(
         task_id = 'bigquery_update_table_task',
         bucket = BUCKET,
         source_objects = [f"raw_yellow_tripdata/{parquet_file}"],
-        destination_project_dataset_table = f'{PROJECT_ID}:{BIGQUERY_DATASET}.yellow_tripdata2',
+        destination_project_dataset_table = f'{PROJECT_ID}:{BIGQUERY_DATASET}.yellow_tripdata4',
         # schema_object = 'cities/us_cities_demo.json',
         write_disposition='WRITE_APPEND',
         source_format = 'parquet',
@@ -134,7 +112,4 @@ with DAG(
         autodetect = True
     )
 
-
-    # download_dataset_task >> format_to_parquet_task >> local_to_gcs_task >> 
-    bigquery_update_table_task
-    # test_task8
+    download_dataset_task >> format_to_parquet_task >> local_to_gcs_task >> bigquery_update_table_task
