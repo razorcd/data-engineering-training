@@ -1,3 +1,7 @@
+-- Course BigQuery SQL:
+-- https://github.com/DataTalksClub/data-engineering-zoomcamp/blob/main/week_3_data_warehouse/big_query.sql
+
+
 -- SELECT * FROM `razor-project-339321.trips_data_all.fhv10` LIMIT 10 
 -- SELECT * FROM `razor-project-339321.trips_data_all.yellow_tripdata4`
 
