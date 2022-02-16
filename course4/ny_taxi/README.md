@@ -1,10 +1,17 @@
-Welcome to your new dbt project!
+## DBT training
 
-### Using the starter project
+#### run dbt
+```
+dbt run --profiles-dir .
+```
 
-Try running the following commands:
-- dbt run
-- dbt test
+
+
+
+
+
+
+
 
 
 ### Resources:
