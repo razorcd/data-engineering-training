@@ -1,17 +1,3 @@
-## DBT training
-
-#### run dbt
-```
-dbt run --profiles-dir .
-```
-
-
-
-
-
-
-
-
 
 
 ### Resources:

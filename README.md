@@ -35,3 +35,33 @@ airflow dags backfill -s 2019-1-1 -e 2019-1-31 data_ingestion_gcs_dag3
 [BigQuery Machine Learning Deployment](https://youtu.be/BjARzEWaznU)  
 [Steps to extract and deploy model with docker](extract_model.md)  
 
+
+#### DBT
+
+## run dbt
+```
+dbt run --profiles-dir .
+```
+
+## run one dbt model
+```
+dbt run -m model_name
+or 
+dbt build --select model_name
+```
+
+## run one dbt model and all it's dependencies
+```
+dbt build --select +model_name
+```
+
+## dbt variables
+```
+ -- dbt build --m <model.sql> --var 'is_test_run: false'
+ {% if var('is_test_run', default=true) %}
+```
+
+## dbt seed overwrite table
+```
+dbt seed --full-refresh
+```
