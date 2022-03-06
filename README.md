@@ -65,3 +65,11 @@ dbt build --select +model_name
 ```
 dbt seed --full-refresh
 ```
+
+#### Spark
+
+## pyspark env vas
+```
+export SPARK_HOME=`pwd`
+export PYTHONPATH=$(ZIPS=("$SPARK_HOME"/python/lib/*.zip); IFS=:; echo "${ZIPS[*]}"):$PYTHONPATH
+```
