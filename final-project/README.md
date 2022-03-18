@@ -1,14 +1,18 @@
 # GitHub events metrics (WIP)
 
 This is a Data Engineering project which creates a data pipeline for monitoring GitHub events in realtime (updates every 1 hr)
+Github updates the dataset to the last hour.
+Details: https://www.gharchive.org/
 
-###Steps:
- - [x] data analysis
+### Steps:
+ - [x] data analysis to research which data to monitor
  - [ ] pipeline to load files from GitHub API and store them in Google storage
  - [ ] pipeline to import all files from Google store to Google BigQuery DB
  - [ ] pipeline to transform from data lake to a Data Warehouse using clean data
  - [ ] pipeline to create realtime visualization dashboards
  - [ ] pipeline to perform bigdata processing
+ - [ ] deploy to cloud
+ - [ ] create CI/CD
 
 ### Data analysis
 
