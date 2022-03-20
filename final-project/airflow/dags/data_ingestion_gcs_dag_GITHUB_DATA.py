@@ -6,7 +6,7 @@ from airflow.utils.dates import days_ago
 from airflow.operators.bash import BashOperator
 from airflow.operators.python import PythonOperator
 
-from datetime import datetime
+from datetime import datetime, timedelta
 from google.cloud import storage
 from airflow.providers.google.cloud.operators.bigquery import BigQueryCreateExternalTableOperator
 from airflow.contrib.operators.gcs_to_bq import GoogleCloudStorageToBigQueryOperator
@@ -19,8 +19,8 @@ BUCKET = os.environ.get("GCP_GCS_BUCKET")
 
 # test_data = "{{ dag_run.conf['input_data_date'] }}"
 # dataset_file = "2022-03-18-23.json.gz"
-file_date = "{{ execution_date.strftime(\'%Y-%m-%d\') }}"
-file_hour = "{{ execution_date.strftime(\'%-H\') }}"
+file_date = "{{ (execution_date - macros.timedelta(hours=1)).strftime(\'%Y-%m-%d\') }}"
+file_hour = "{{ (execution_date - macros.timedelta(hours=1)).strftime(\'%-H\') }}"
 # dataset_file = "yellow_tripdata_" + file_date + ".csv"
 dataset_file = "" + file_date + "-" + file_hour + ".json.gz"
 # dataset_url = f"https://s3.amazonaws.com/nyc-tlc/trip+data/{dataset_file}"
@@ -67,16 +67,17 @@ def upload_to_gcs(bucket, object_name, local_file):
 
 default_args = {
     "owner": "airflow",
-    "start_date": datetime(2022, 3, 20, 17),
-    "end_date": datetime.now(),
+    "start_date": datetime(2022, 3, 20, 16),
+    # "end_date": datetime.now(),
     "depends_on_past": False,
-    "retries": 1,
+    "retries": 5,
+    "retry_delay": timedelta(minutes=10)
 }
 
 # NOTE: DAG declaration - using a Context Manager (an implicit way)
 with DAG(
-    dag_id="data_ingestion_gcs_dag_GITHUB_DATA_4",
-    schedule_interval="@hourly",
+    dag_id="data_ingestion_gcs_dag_GITHUB_DATA_14",
+    schedule_interval='15 * * * *',
     default_args=default_args,
     catchup=True,
     max_active_runs=1,
