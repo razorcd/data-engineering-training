@@ -6,3 +6,4 @@ course1b/yellow_tripdata_2021-01.csv
 data-engineering-zoomcamp/
 .ipynb_checkpoints
 *.json.gz
+*.log

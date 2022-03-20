@@ -11,6 +11,7 @@ Details: https://www.gharchive.org/
  - [ ] pipeline to transform from data lake to a Data Warehouse using clean data
  - [ ] pipeline to create realtime visualization dashboards
  - [ ] pipeline to perform bigdata processing
+ - [ ] review and cleanup pipelines
  - [ ] deploy to cloud
  - [ ] create CI/CD
 
