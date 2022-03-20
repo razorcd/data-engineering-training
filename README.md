@@ -70,6 +70,7 @@ dbt seed --full-refresh
 
 ## pyspark env vas
 ```
+cd spark
 export SPARK_HOME=`pwd`
 export PYTHONPATH=$(ZIPS=("$SPARK_HOME"/python/lib/*.zip); IFS=:; echo "${ZIPS[*]}"):$PYTHONPATH
 ```
