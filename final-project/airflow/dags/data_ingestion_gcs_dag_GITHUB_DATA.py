@@ -28,7 +28,7 @@ dataset_file = "" + file_date + "-" + file_hour + ".json.gz"
 dataset_url = f"https://data.gharchive.org/{dataset_file}"
 parquet_file = dataset_file.replace('.json.gz', '.parquet')
 path_to_local_home = os.environ.get("AIRFLOW_HOME", "/opt/airflow/")
-BIGQUERY_DATASET = os.environ.get("BIGQUERY_DATASET", 'new_dataset')
+BIGQUERY_DATASET = os.environ.get("BIGQUERY_DATASET", 'de_final_data')
 
 
 
@@ -39,12 +39,12 @@ def flatten_json(y):
     def flatten(x, name=''):
         if type(x) is dict:
             for a in x:
-                flatten(x[a], name + a + '.')
+                flatten(x[a], name + a + '_')
         elif type(x) is list:
             out[name[:-1]] = json.dumps(x)
 #             i = 0
 #             for a in x:
-#                 flatten(a, name + str(i) + '.')
+#                 flatten(a, name + str(i) + '_')
 #                 i += 1
         else:
             out[name[:-1]] = x
@@ -101,7 +101,7 @@ def upload_to_gcs(bucket, object_name, local_file):
 
 default_args = {
     "owner": "airflow",
-    "start_date": datetime(2022, 3, 20, 16),
+    "start_date": datetime(2022, 3, 21, 20),
     # "end_date": datetime.now(),
     "depends_on_past": False,
     "retries": 5,
@@ -110,7 +110,7 @@ default_args = {
 
 # NOTE: DAG declaration - using a Context Manager (an implicit way)
 with DAG(
-    dag_id="data_ingestion_gcs_dag_GITHUB_DATA_18",
+    dag_id="data_ingestion_gcs_dag_GITHUB_DATA_28",
     schedule_interval='15 * * * *',
     default_args=default_args,
     catchup=True,
@@ -143,16 +143,18 @@ with DAG(
     )
 
 
-    # bigquery_update_table_task = GoogleCloudStorageToBigQueryOperator(
-    #     task_id = 'bigquery_update_table_task',
-    #     bucket = BUCKET,
-    #     source_objects = [f"raw_data/{dataset_file}"],
-    #     destination_project_dataset_table = f'{PROJECT_ID}:{BIGQUERY_DATASET}.github_data',
-    #     # schema_object = 'cities/us_cities_demo.json',
-    #     write_disposition='WRITE_APPEND',
-    #     source_format = '.json.gz',
-    #     skip_leading_rows = 1,
-    #     autodetect = True
-    # )
+    bigquery_update_table_task = GoogleCloudStorageToBigQueryOperator(
+        task_id = 'bigquery_update_table_task',
+        bucket = BUCKET,
+        source_objects = [f"raw_data/{parquet_file}"],
+        destination_project_dataset_table = f'{PROJECT_ID}:{BIGQUERY_DATASET}.github_data',
+        # schema_object = 'cities/us_cities_demo.json',
+        write_disposition='WRITE_APPEND',
+        source_format = 'PARQUET',
+        skip_leading_rows = 0,
+        max_bad_records=2147483647,
+        ignore_unknown_values=True,
+        autodetect = True
+    )
 
-    download_dataset_task >> format_to_parquet_task >> local_to_gcs_task
+    download_dataset_task >> format_to_parquet_task >> local_to_gcs_task >> bigquery_update_table_task #>> delete_files

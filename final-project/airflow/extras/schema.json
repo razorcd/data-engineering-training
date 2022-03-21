@@ -1,0 +1,4 @@
+[
+    {"type": "INT64", "name": "first_column_name", "mode": "NULLABLE"},
+    {"type": "INT64", "name": "second_column_name", "mode": "NULLABLE"}
+]
