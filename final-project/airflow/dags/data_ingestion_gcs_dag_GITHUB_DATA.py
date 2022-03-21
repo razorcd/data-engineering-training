@@ -166,7 +166,7 @@ with DAG(
         write_disposition='WRITE_APPEND',
         source_format = 'PARQUET',
         skip_leading_rows = 0,
-        max_bad_records=2147483647,
+        max_bad_records=1000,
         ignore_unknown_values=True,
         autodetect = True
     )
