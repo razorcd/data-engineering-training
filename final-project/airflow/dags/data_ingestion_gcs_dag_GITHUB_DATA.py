@@ -74,7 +74,12 @@ def format_to_parquet(src_file):
     logging.info("Writing Parquet file: " + dest_file)
     pq.write_table(table_flatten, dest_file)
 
-
+def delete_local_files(filenames):
+    for filename in filenames:
+        if os.path.exists(filename):
+            os.remove(filename)
+        else:
+            print("The file does not exist: "+filename)    
 
 
 # NOTE: takes 20 mins, at an upload speed of 800kbps. Faster if your internet has a better upload speed
@@ -110,7 +115,7 @@ default_args = {
 
 # NOTE: DAG declaration - using a Context Manager (an implicit way)
 with DAG(
-    dag_id="data_ingestion_gcs_dag_GITHUB_DATA_28",
+    dag_id="data_ingestion_gcs_dag_GITHUB_DATA_29",
     schedule_interval='15 * * * *',
     default_args=default_args,
     catchup=True,
@@ -130,6 +135,15 @@ with DAG(
             "src_file": f"{path_to_local_home}/{dataset_file}",
         },
     )
+
+    delete_local_files_task = PythonOperator(
+        task_id="delete_local_files_task",
+        python_callable=delete_local_files,
+        op_kwargs={
+            "filenames": [f"{path_to_local_home}/{dataset_file}", f"{path_to_local_home}/{parquet_file}"],
+        },
+    )
+
 
     # TODO: Homework - research and try XCOM to communicate output values between 2 tasks/operators
     local_to_gcs_task = PythonOperator(
@@ -157,4 +171,4 @@ with DAG(
         autodetect = True
     )
 
-    download_dataset_task >> format_to_parquet_task >> local_to_gcs_task >> bigquery_update_table_task #>> delete_files
+    download_dataset_task >> format_to_parquet_task >> local_to_gcs_task >> bigquery_update_table_task >> delete_local_files_task
