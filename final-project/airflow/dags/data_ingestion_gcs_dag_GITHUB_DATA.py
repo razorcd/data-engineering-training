@@ -10,9 +10,12 @@ from datetime import datetime, timedelta
 from google.cloud import storage
 from airflow.providers.google.cloud.operators.bigquery import BigQueryCreateExternalTableOperator
 from airflow.contrib.operators.gcs_to_bq import GoogleCloudStorageToBigQueryOperator
-# import pyarrow.json as pv
-# import pyarrow.parquet as pq
-# import gzip
+import pyarrow as p
+import pyarrow.parquet as pq
+import pandas as pd 
+import json 
+import gzip
+
 
 PROJECT_ID = os.environ.get("GCP_PROJECT_ID")
 BUCKET = os.environ.get("GCP_GCS_BUCKET")
@@ -21,26 +24,57 @@ BUCKET = os.environ.get("GCP_GCS_BUCKET")
 # dataset_file = "2022-03-18-23.json.gz"
 file_date = "{{ (execution_date - macros.timedelta(hours=1)).strftime(\'%Y-%m-%d\') }}"
 file_hour = "{{ (execution_date - macros.timedelta(hours=1)).strftime(\'%-H\') }}"
-# dataset_file = "yellow_tripdata_" + file_date + ".csv"
 dataset_file = "" + file_date + "-" + file_hour + ".json.gz"
-# dataset_url = f"https://s3.amazonaws.com/nyc-tlc/trip+data/{dataset_file}"
 dataset_url = f"https://data.gharchive.org/{dataset_file}"
-
-
+parquet_file = dataset_file.replace('.json.gz', '.parquet')
 path_to_local_home = os.environ.get("AIRFLOW_HOME", "/opt/airflow/")
-parquet_file = dataset_file.replace('.csv', '.parquet')
-BIGQUERY_DATASET = os.environ.get("BIGQUERY_DATASET", 'trips_data_all')
+BIGQUERY_DATASET = os.environ.get("BIGQUERY_DATASET", 'new_dataset')
 
 
-# def format_to_parquet(src_file):
-#     if not src_file.endswith('.json.gz'):
-#         logging.error("Can only accept source files in json.gz format, for the moment")
-#         return
-#     logging.info("Converting file to parquet: "+src_file)
 
-#     with gzip.open(src_file) as fp:
-#         table = pv.read_json(fp)
-#         pq.write_table(table, src_file.replace('.json.gz', '.parquet'))
+
+def flatten_json(y):
+    out = {}
+
+    def flatten(x, name=''):
+        if type(x) is dict:
+            for a in x:
+                flatten(x[a], name + a + '.')
+        elif type(x) is list:
+            out[name[:-1]] = json.dumps(x)
+#             i = 0
+#             for a in x:
+#                 flatten(a, name + str(i) + '.')
+#                 i += 1
+        else:
+            out[name[:-1]] = x
+
+    flatten(y)
+    return out
+
+def format_to_parquet(src_file):
+    if not src_file.endswith('.json.gz'):
+        logging.error("Can only accept source files in json.gz format, for the moment")
+        return
+    
+    logging.info("Reading Json file as flatten dict array: "+src_file)
+    data_flatten = []
+    with gzip.open(src_file, 'rb') as f:
+        for line in f:
+            j = json.loads(line)
+            data_flatten.append(flatten_json(j))
+            
+    logging.info("Converting flatten dict array to Pandas DataFrame.")
+    df_data_flatten = pd.DataFrame.from_dict(data_flatten)
+
+    logging.info("Converting Pandas DataFrame to pyarrow.")
+    table_flatten = p.Table.from_pandas(df_data_flatten)
+
+    dest_file = src_file.replace('.json.gz', '.parquet')
+    logging.info("Writing Parquet file: " + dest_file)
+    pq.write_table(table_flatten, dest_file)
+
+
 
 
 # NOTE: takes 20 mins, at an upload speed of 800kbps. Faster if your internet has a better upload speed
@@ -76,7 +110,7 @@ default_args = {
 
 # NOTE: DAG declaration - using a Context Manager (an implicit way)
 with DAG(
-    dag_id="data_ingestion_gcs_dag_GITHUB_DATA_14",
+    dag_id="data_ingestion_gcs_dag_GITHUB_DATA_18",
     schedule_interval='15 * * * *',
     default_args=default_args,
     catchup=True,
@@ -89,13 +123,13 @@ with DAG(
         bash_command=f"curl -sSf {dataset_url} > {path_to_local_home}/{dataset_file}"
     )
 
-    # format_to_parquet_task = PythonOperator(
-    #     task_id="format_to_parquet_task",
-    #     python_callable=format_to_parquet,
-    #     op_kwargs={
-    #         "src_file": f"{path_to_local_home}/{dataset_file}",
-    #     },
-    # )
+    format_to_parquet_task = PythonOperator(
+        task_id="format_to_parquet_task",
+        python_callable=format_to_parquet,
+        op_kwargs={
+            "src_file": f"{path_to_local_home}/{dataset_file}",
+        },
+    )
 
     # TODO: Homework - research and try XCOM to communicate output values between 2 tasks/operators
     local_to_gcs_task = PythonOperator(
@@ -103,8 +137,8 @@ with DAG(
         python_callable=upload_to_gcs,
         op_kwargs={
             "bucket": BUCKET,
-            "object_name": f"raw_data/{dataset_file}",
-            "local_file": f"{path_to_local_home}/{dataset_file}",
+            "object_name": f"raw_data/{parquet_file}",
+            "local_file": f"{path_to_local_home}/{parquet_file}",
         },
     )
 
@@ -112,13 +146,13 @@ with DAG(
     # bigquery_update_table_task = GoogleCloudStorageToBigQueryOperator(
     #     task_id = 'bigquery_update_table_task',
     #     bucket = BUCKET,
-    #     source_objects = [f"raw_yellow_tripdata/{parquet_file}"],
-    #     destination_project_dataset_table = f'{PROJECT_ID}:{BIGQUERY_DATASET}.yellow_tripdata4',
+    #     source_objects = [f"raw_data/{dataset_file}"],
+    #     destination_project_dataset_table = f'{PROJECT_ID}:{BIGQUERY_DATASET}.github_data',
     #     # schema_object = 'cities/us_cities_demo.json',
     #     write_disposition='WRITE_APPEND',
-    #     source_format = 'parquet',
+    #     source_format = '.json.gz',
     #     skip_leading_rows = 1,
     #     autodetect = True
     # )
 
-    download_dataset_task >> local_to_gcs_task
+    download_dataset_task >> format_to_parquet_task >> local_to_gcs_task
