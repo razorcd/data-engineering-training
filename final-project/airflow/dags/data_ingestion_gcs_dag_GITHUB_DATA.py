@@ -65,7 +65,8 @@ def format_to_parquet(src_file):
             data_flatten.append(flatten_json(j))
             
     logging.info("Converting flatten dict array to Pandas DataFrame.")
-    df_data_flatten = pd.DataFrame.from_dict(data_flatten)
+    selected_columns = ["id", "created_at", "type", "actor_id", "actor_login", "public", "repo_id", "repo_name", "payload_commits"]
+    df_data_flatten = pd.DataFrame.from_dict(data_flatten)[selected_columns]
 
     logging.info("Converting Pandas DataFrame to pyarrow.")
     table_flatten = p.Table.from_pandas(df_data_flatten)
@@ -115,7 +116,7 @@ default_args = {
 
 # NOTE: DAG declaration - using a Context Manager (an implicit way)
 with DAG(
-    dag_id="data_ingestion_gcs_dag_GITHUB_DATA_29",
+    dag_id="data_ingestion_gcs_dag_GITHUB_DATA_31",
     schedule_interval='15 * * * *',
     default_args=default_args,
     catchup=True,
