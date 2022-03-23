@@ -1,0 +1,10 @@
+github_bigquery:
+  target: dev
+  outputs:
+    dev:
+      type: bigquery
+      method: service-account
+      project: razor-project-339321
+      dataset: de_final_data
+      threads: 2
+      keyfile: /dbt/google_credentials.json
