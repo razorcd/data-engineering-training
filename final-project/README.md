@@ -6,9 +6,10 @@ Details: https://www.gharchive.org/
 
 ### Steps:
  - [x] data analysis to research which data to monitor
- - [ ] pipeline to load files from GitHub API and store them in Google storage
- - [ ] pipeline to import all files from Google store to Google BigQuery DB
- - [ ] pipeline to transform from data lake to a Data Warehouse using clean data
+ - [x] pipeline to load files from GitHub API and store them in Google storage
+ - [x] pipeline to import all files from Google store to Google BigQuery DB
+ - [x] pipeline to transform from data lake to a Data Warehouse using clean data
+ - [ ] pipeline to transform from Data Warehouse raw tables to aggregated data views
  - [ ] pipeline to create realtime visualization dashboards
  - [ ] pipeline to perform bigdata processing
  - [ ] review and cleanup pipelines
@@ -27,3 +28,30 @@ See the analysis in jupyter notebook: [LINK]
     - Most common words in commits
 
 These 3 dashboards will be displayed in the final visualizations once the data pipeline is complete.    
+
+### Airflow
+
+Airflow has a DAG with multiple jobs: 
+    - download github file every hour
+    - convert from .json.gz to .parquet
+    - upload data to Google Storage
+    - transfer data from Google Storage to Google Bigquery
+    - delete local temp files
+
+#### Run locally:    
+```
+cd airflow
+docker-compose up
+```
+
+### DBT
+DBT is used to create BigQuery views of aggregated data.
+
+#### Run locally:
+```
+docker run --rm -it \
+    -v $PWD:/dbt \
+    -v ..../google_credentials.json:/dbt/google_credentials.json \
+    -v profiles.yml:/root/.dbt/profiles.yml \
+    davidgasquez/dbt:latest dbt run --profiles-dir /dbt --full-refresh
+```
