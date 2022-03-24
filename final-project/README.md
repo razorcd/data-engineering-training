@@ -9,8 +9,8 @@ Details: https://www.gharchive.org/
  - [x] pipeline to load files from GitHub API and store them in Google storage
  - [x] pipeline to import all files from Google store to Google BigQuery DB
  - [x] pipeline to transform from data lake to a Data Warehouse using clean data
- - [ ] pipeline to transform from Data Warehouse raw tables to aggregated data views
- - [ ] pipeline to create realtime visualization dashboards
+ - [x] pipeline to transform from Data Warehouse raw tables to aggregated data views
+ - [x] pipeline to create realtime visualization dashboards
  - [ ] pipeline to perform bigdata processing
  - [ ] review and cleanup pipelines
  - [ ] deploy to cloud
@@ -55,3 +55,10 @@ docker run --rm -it \
     -v profiles.yml:/root/.dbt/profiles.yml \
     davidgasquez/dbt:latest dbt run --profiles-dir /dbt --full-refresh
 ```
+
+
+### Visualizations:
+
+Visualizations are done using Google Data Studio and they update in realtime (every hour once data is ingested).
+
+https://datastudio.google.com/s/i0zQ5DwgbuA
