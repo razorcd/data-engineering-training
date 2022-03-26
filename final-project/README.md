@@ -70,6 +70,6 @@ docker run --rm --name spark_3_1_datamech  -it spark_3_1_datamech python main.py
 
 Visualizations are done using Google Data Studio and they update in realtime (every hour once data is ingested).
 
-https://datastudio.google.com/s/i0zQ5DwgbuA
+https://datastudio.google.com/s/lCwe6dFuN1g
 
 ![image](https://user-images.githubusercontent.com/3721810/160254857-307a0896-15a2-4ec5-9917-6f5edf5efd56.png)
