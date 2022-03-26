@@ -55,7 +55,16 @@ docker run --rm -it \
     -v profiles.yml:/root/.dbt/profiles.yml \
     davidgasquez/dbt:latest dbt run --profiles-dir /dbt --full-refresh
 ```
+### Spark
 
+Spark is used to load Github event data from BigQuery, extract commit messages, break messages in words and list most common words. The result is send back to GCS as parquet file. Airflow job will take it back to BQ as a separate table.
+
+#### Run locally:
+```
+docker build -f Dockerfile -t spark_3_1_datamech . 
+
+docker run --rm --name spark_3_1_datamech  -it spark_3_1_datamech python main.py
+```
 
 ### Visualizations:
 
