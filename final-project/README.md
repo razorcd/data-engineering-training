@@ -16,6 +16,12 @@ Details: https://www.gharchive.org/
  - [ ] deploy to cloud
  - [ ] create CI/CD
 
+
+### System architecture
+
+![image](https://user-images.githubusercontent.com/3721810/160255769-12c40df2-0d3d-406f-a85e-88b0c783cb2b.png)
+
+
 ### Data analysis
 
 See the analysis in jupyter notebook: [LINK]
