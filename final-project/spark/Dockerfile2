@@ -1,0 +1,16 @@
+from datamechanics/spark:3.1.1-hadoop-3.2.0-java-8-scala-2.12-python-3.8-dm16
+# from bitnami/spark:3.1.2-debian-10-r130
+
+
+ENV PYSPARK_MAJOR_PYTHON_VERSION=3
+# WORKDIR /opt/spark/work-dir
+
+COPY requirements.txt .
+RUN pip3 install -r requirements.txt
+
+COPY spark-bigquery-with-dependencies_2.12-0.24.0.jar /opt/spark/jars
+
+COPY google_credentials.json .
+ENV GOOGLE_APPLICATION_CREDENTIALS=/opt/spark/work-dir/google_credentials.json
+
+COPY main.py .

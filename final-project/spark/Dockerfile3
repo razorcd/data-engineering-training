@@ -1,0 +1,35 @@
+# docker build -f Dockerfile3 -t spark_3_1_2_bitnami . && docker run --rm --name spark_bitnami  -it spark_3_1_2_bitnami
+# docker exec -ti spark_bitnami bash
+## spark-submit -v --name "My app" --master local[4] --conf spark.eventLog.enabled=false --conf spark.driver.memory=6g main.py
+
+# from bitnami/spark:3.1.2-debian-10-r130
+from bitnami/spark:3.2.1-debian-10-r53
+# from bitnami/spark:2.4.3-debian-9-r6
+
+# FROM bitnami/spark:3.1.3
+
+# USER root
+# RUN rm -r /opt/bitnami/spark/jars && \
+#     curl --location https://dlcdn.apache.org/spark/spark-3.1.3/spark-3.1.3-bin-hadoop2.7.tgz | \
+#     tar --extract --gzip --strip=1 --directory /opt/bitnami/spark/ spark-3.1.3-bin-hadoop2.7/jars/
+# USER 1001
+
+
+ENV PYSPARK_MAJOR_PYTHON_VERSION=3
+# WORKDIR /opt/bitnami/spark
+
+# COPY requirements.txt .
+# RUN pip install -r requirements.txt
+# RUN pip install pyspark
+
+COPY spark-bigquery-with-dependencies_2.12-0.24.0.jar /opt/bitnami/spark/jars
+# COPY gcs-connector-hadoop2-1.9.17.jar /opt/bitnami/spark/jars
+COPY gcs-connector-hadoop3-2.2.5-shaded.jar /opt/bitnami/spark/jars
+COPY conscrypt-openjdk-2.5.1-linux-x86_64.jar /opt/bitnami/spark/jars
+COPY flogger-system-backend-0.7.4.jar /opt/bitnami/spark/jars
+
+COPY razor-project-339321-f3a7294a27d0.p12 ./google_credentials.p12
+COPY google_credentials.json .
+ENV GOOGLE_APPLICATION_CREDENTIALS=/opt/bitnami/spark/google_credentials.json
+
+COPY main.py .
