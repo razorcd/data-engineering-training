@@ -1,5 +1,6 @@
 locals {
   data_lake_bucket = "de_final_data_lake"
+  spark_github_words_bucket = "spark_github_words"
 }
 
 variable "project" {
