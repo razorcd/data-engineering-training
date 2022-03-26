@@ -11,7 +11,7 @@ Details: https://www.gharchive.org/
  - [x] pipeline to transform from data lake to a Data Warehouse using clean data
  - [x] pipeline to transform from Data Warehouse raw tables to aggregated data views
  - [x] pipeline to create realtime visualization dashboards
- - [ ] pipeline to perform bigdata processing
+ - [x] pipeline to perform batch/stream processing
  - [ ] review and cleanup pipelines
  - [ ] deploy to cloud
  - [ ] create CI/CD
