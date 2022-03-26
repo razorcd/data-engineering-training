@@ -62,3 +62,5 @@ docker run --rm -it \
 Visualizations are done using Google Data Studio and they update in realtime (every hour once data is ingested).
 
 https://datastudio.google.com/s/i0zQ5DwgbuA
+
+![image](https://user-images.githubusercontent.com/3721810/160254857-307a0896-15a2-4ec5-9917-6f5edf5efd56.png)
