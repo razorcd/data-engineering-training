@@ -7,3 +7,5 @@ data-engineering-zoomcamp/
 .ipynb_checkpoints
 *.json.gz
 *.log
+*.p12
+temp/
