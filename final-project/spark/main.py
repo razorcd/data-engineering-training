@@ -67,10 +67,10 @@ if __name__ == "__main__":
         .config("google.cloud.auth.service.account.enable", "true") \
         .config("credentialsFile", "google_credentials.json") \
         .config("GcpJsonKeyFile", "google_credentials.json") \
-        .config("spark.driver.memory", "6g") \
-        .config("spark.executor.memory", "3g") \
+        .config("spark.driver.memory", "4g") \
+        .config("spark.executor.memory", "2g") \
         .config("spark.memory.offHeap.enabled",True) \
-        .config("spark.memory.offHeap.size","10g") \
+        .config("spark.memory.offHeap.size","5g") \
         .config('google.cloud.auth.service.account.json.keyfile', "google_credentials.json") \
         .config("fs.gs.project.id", "razor-project-339321") \
         .config("fs.gs.impl", "com.google.cloud.hadoop.fs.gcs.GoogleHadoopFileSystem") \
@@ -120,10 +120,12 @@ if __name__ == "__main__":
     logging.info("Spark URL: " + spark.sparkContext.uiWebUrl)
 
 
-    # sql = """
-    #     SELECT COUNT(*) as c
-    #     FROM github_data_clean_temp
-    # """
+    sql = """
+        SELECT *
+        FROM github_data_clean
+        LIMIT 1000
+        ORDER_BY created_at_timestamp DESC
+    """
 
     df = spark.read \
         .format('bigquery') \
@@ -132,9 +134,9 @@ if __name__ == "__main__":
         .option("parentProject", "razor-project-339321") \
         .option('dataset','de_final_data') \
         .option('table','github_data_clean') \
-        .load()
-    # 2 - Print the Google BigQuery table
-    # df.show()
+        .load(sql)
+    
+    logging.info("\nImput table schema: ")
     df.printSchema()
 
     # df.show(1,False)
@@ -182,25 +184,25 @@ if __name__ == "__main__":
 
     df1 = spark \
         .sql("""
-            SELECT id, created_at_timestamp, type, payload_commits
+            SELECT id, payload_commits
             FROM github_data_clean_temp
             WHERE type = 'PushEvent'
             """) \
-        .repartition(10)
+        .repartition(4)
     df2 = df1.withColumn("commits_count", comits_count("payload_commits")) \
         # .show()
 
     df3 = df2 \
         .withColumn("commits_words", comits_words("payload_commits")) \
         .withColumn("words_count", words_count("commits_words"))
-    df4 = df3.select(df3.id, df3.created_at_timestamp, explode(df3.commits_words)) \
+    df4 = df3.select(df3.id, explode(df3.commits_words).alias("word")) \
         .withColumnRenamed("id", "github_event_foreign_key") 
         # .show()
 
     # df4.limit(5).show()
 
     df4.write \
-        .format("csv") \
+        .format("parquet") \
         .mode("overwrite") \
         .option("credentialsFile","google_credentials.json") \
         .option("project", "razor-project-339321") \
@@ -209,7 +211,7 @@ if __name__ == "__main__":
         .option("table", "de_final_data.github_data_counter2") \
         .option("persistentGcsBucket", "spark_temp_gh1") \
         .option("persistentGcsPath", "spark_temp_gh1") \
-        .save('gs://spark_temp_gh_dest/file2.csv')
+        .save('gs://spark_github_words/files/')
 
 
         # .format("bigquery") \

@@ -107,7 +107,8 @@ def upload_to_gcs(bucket, object_name, local_file):
 
 default_args = {
     "owner": "airflow",
-    "start_date": datetime(2022, 3, 21, 20),
+    # "start_date": datetime(2022, 3, 21, 20),
+    "start_date": datetime.now()-timedelta(hours = 2),
     # "end_date": datetime.now(),
     "depends_on_past": False,
     "retries": 5,
@@ -116,7 +117,7 @@ default_args = {
 
 # NOTE: DAG declaration - using a Context Manager (an implicit way)
 with DAG(
-    dag_id="data_ingestion_gcs_dag_GITHUB_DATA_31",
+    dag_id="data_ingestion_gcs_dag_GITHUB_DATA_32",
     schedule_interval='15 * * * *',
     default_args=default_args,
     catchup=True,
