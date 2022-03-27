@@ -7,5 +7,6 @@ do
    echo "Starting DBT run $i"
    dbt run --profiles-dir /dbt --full-refresh
    echo "Run $i complete. Waiting 15min for next run."
-   sleep 15m  
+   echo $(date)
+   sleep 15m 
 done
