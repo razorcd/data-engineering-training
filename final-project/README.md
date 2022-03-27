@@ -24,9 +24,9 @@ Everything is Dockerized, so it can be deployed to any platform easily.
 ![image](https://user-images.githubusercontent.com/3721810/160255769-12c40df2-0d3d-406f-a85e-88b0c783cb2b.png)
 
 
-### Data analysis
+### Exploratory data analysis
 
-See the analysis in jupyter notebook: [LINK]
+See the analysis in jupyter notebook: [data analysis](https://github.com/razorcd/data-engineering-training/blob/main/final-project/data-analysis/data_analysis.ipynb)
 
 - loaded data for 1 hour from GitHub API
 - cleaned up the data and created a DataFrame
