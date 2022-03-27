@@ -144,7 +144,7 @@ Run locally:
 docker build -t dbt_transform .
 
 # requires correct google_credentials.json path
-docker run --rm -it -v $PWD:/dbt -v ..../google_credentials.json:/dbt/google_credentials.json -v profiles.yml:/root/.dbt/profiles.yml dbt_transform
+docker run --rm --name dbtTransform -it -v $PWD:/dbt -v ..../google_credentials.json:/dbt/google_credentials.json -v profiles.yml:/root/.dbt/profiles.yml dbt_transform
 ```
 
 ### 5.Spark
@@ -155,6 +155,8 @@ Spark image has a starting script to run updates every periodically.
 
 Run locally:
 ```sh
+# Add google_credentials.json and p12 to this folder.
+
 docker build -f Dockerfile -t spark_3_1_datamech . 
 
 # Dockerfile3 can also be used but main.py file has to be manually submitted. See Dockerfile3 for comments.
