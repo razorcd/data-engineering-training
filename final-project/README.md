@@ -4,6 +4,19 @@ This is a Data Engineering project which creates a data pipeline for monitoring 
 Github updates the dataset to the last hour.
 Details: https://www.gharchive.org/
 
+Github receives ~100k events every hour. Events like `Push`, `PullRequest`, `Fork`, etc. To monitor the business is performing well we defined the following KPIs to be visible in realtime.
+
+KPIs:
+- Total GitHub events stored.
+- Events per hour and by type.
+- Percentage of each event type.
+- Most frequently used words in commits.
+
+These KPIs were also chosen as an example for designing a data pipeline with frequent updates.
+
+GitHub releases a new Event archive every hour. Our system also pulls data every hour, 15min after Github release. Our visualization dashboard will be up to date.
+
+
 ### Steps:
  - [x] data analysis to research which data to monitor
  - [x] pipeline to load files from GitHub API and store them in Google storage
@@ -58,7 +71,8 @@ terraform destroy
 
 ### 2. BigQuery partitioning and clustering
 
-`github_data_clean` is partitioned on `created_at_timestamp` field using DBT.
+`github_data_clean` table is partitioned on `created_at_timestamp` field using DBT. This field is used to group event count by hour.
+
 Optionally it can be created manually:
 ```sql
 CREATE TABLE de_final_data.github_data_clean
@@ -80,7 +94,7 @@ CLUSTER BY
 ```
 
 
-`de_final_data` table was recreated manually:
+`de_final_data` table was recreated manually. `word` is grouped to count it's frequency.
 
 ```sql
 CREATE TABLE de_final_data.words_data
@@ -135,7 +149,7 @@ docker run --rm -it -v $PWD:/dbt -v ..../google_credentials.json:/dbt/google_cre
 
 ### 5.Spark
 
-Spark is used to load Github event data from BigQuery, extract commit messages, break messages in words and list most common words. The result is send back to GCS as parquet file. Airflow job will take it back to BQ as a separate table.
+Spark is used to load Github event data from BigQuery, extract commit messages, break messages in words and list most common words. The result is sent back to GCS as parquet file. Airflow job will take it back to BQ as a separate table.
 
 Spark image has a starting script to run updates every periodically.
 
