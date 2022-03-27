@@ -172,7 +172,8 @@ Visualizations are done using Google Data Studio and they update in realtime (ev
 
 View visualization Live: https://datastudio.google.com/s/urfSamU8nfQ
 
-![image](https://user-images.githubusercontent.com/3721810/160254857-307a0896-15a2-4ec5-9917-6f5edf5efd56.png)
+![image](https://user-images.githubusercontent.com/3721810/160303922-e308bc6c-ce06-4d36-9b22-13b6d9fb01ed.png)
+
 
 
 ## Cloud
