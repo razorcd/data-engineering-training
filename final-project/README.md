@@ -27,7 +27,7 @@ GitHub releases a new Event archive every hour. Our system also pulls data every
  - [x] pipeline to perform batch/stream processing
  - [x] optimize DB queries(partition & cluster)
  - [x] review and cleanup pipelines
- - [ ] deploy to cloud
+ - [x] deploy to cloud
 
 
 ### System architecture
@@ -172,3 +172,13 @@ Visualizations are done using Google Data Studio and they update in realtime (ev
 https://datastudio.google.com/s/nghliFHpXT8
 
 ![image](https://user-images.githubusercontent.com/3721810/160254857-307a0896-15a2-4ec5-9917-6f5edf5efd56.png)
+
+
+## Cloud
+
+Deploayed to Cloud following the "Steps to reproduce" from above.
+
+I used GCP Compute Engine as a virtual machine instance. All docker images running together.
+
+![image](https://user-images.githubusercontent.com/3721810/160302367-dd8f1186-2678-4bd1-8304-1e5c3089cae3.png)
+
