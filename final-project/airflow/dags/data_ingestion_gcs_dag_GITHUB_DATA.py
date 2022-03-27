@@ -117,7 +117,7 @@ default_args = {
 
 # NOTE: DAG declaration - using a Context Manager (an implicit way)
 with DAG(
-    dag_id="data_ingestion_gcs_dag_GITHUB_DATA_32",
+    dag_id="data_ingestion_gcs_dag_GITHUB_DATA_33",
     schedule_interval='15 * * * *',
     default_args=default_args,
     catchup=True,

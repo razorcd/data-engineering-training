@@ -123,7 +123,7 @@ if __name__ == "__main__":
     sql = """
         SELECT *
         FROM github_data_clean
-        LIMIT 1000
+        LIMIT 1000000
         ORDER_BY created_at_timestamp DESC
     """
 
@@ -211,7 +211,7 @@ if __name__ == "__main__":
         .option("table", "de_final_data.github_data_counter2") \
         .option("persistentGcsBucket", "spark_temp_gh1") \
         .option("persistentGcsPath", "spark_temp_gh1") \
-        .save('gs://spark_github_words/files/')
+        .save('gs://spark_github_words_razor-project-339321/files/')
 
 
         # .format("bigquery") \

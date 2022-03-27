@@ -47,7 +47,7 @@ default_args = {
 
 # NOTE: DAG declaration - using a Context Manager (an implicit way)
 with DAG(
-    dag_id="data_ingestion_gcs_dag_WORDS_DATA_13",
+    dag_id="data_ingestion_gcs_dag_WORDS_DATA_21",
     schedule_interval='30 * * * *',
     default_args=default_args,
     catchup=True,
@@ -57,7 +57,7 @@ with DAG(
 
     bigquery_update_words_table_task = GoogleCloudStorageToBigQueryOperator(
         task_id = 'bigquery_update_words_table_task',
-        bucket = "spark_github_words",
+        bucket = "spark_github_words_razor-project-339321",
         source_objects = ["files/*.parquet"],
         destination_project_dataset_table = f'{PROJECT_ID}:{BIGQUERY_DATASET}.words_data',
         # schema_object = 'cities/us_cities_demo.json',

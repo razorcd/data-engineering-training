@@ -22,3 +22,7 @@ ENV GOOGLE_APPLICATION_CREDENTIALS=/opt/bitnami/spark/google_credentials.json
 
 
 COPY main.py .
+COPY entry.sh .
+
+# Run dbt
+CMD ["bash", "-i", "entry.sh"]

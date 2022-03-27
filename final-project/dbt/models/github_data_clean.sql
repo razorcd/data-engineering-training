@@ -1,4 +1,11 @@
-{{ config(materialized='table') }}
+{{ config(
+    materialized='table',
+    partition_by={
+      "field": "created_at_timestamp",
+      "data_type": "timestamp"
+    }
+)}}
+
 
 
 SELECT 
