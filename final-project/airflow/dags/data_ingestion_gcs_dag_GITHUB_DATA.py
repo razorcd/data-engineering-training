@@ -22,8 +22,8 @@ BUCKET = os.environ.get("GCP_GCS_BUCKET")
 
 # test_data = "{{ dag_run.conf['input_data_date'] }}"
 # dataset_file = "2022-03-18-23.json.gz"
-file_date = "{{ (execution_date - macros.timedelta(hours=1)).strftime(\'%Y-%m-%d\') }}"
-file_hour = "{{ (execution_date - macros.timedelta(hours=1)).strftime(\'%-H\') }}"
+file_date = "{{ (execution_date - macros.timedelta(hours=0)).strftime(\'%Y-%m-%d\') }}"
+file_hour = "{{ (execution_date - macros.timedelta(hours=0)).strftime(\'%-H\') }}"
 dataset_file = "" + file_date + "-" + file_hour + ".json.gz"
 dataset_url = f"https://data.gharchive.org/{dataset_file}"
 parquet_file = dataset_file.replace('.json.gz', '.parquet')
@@ -117,7 +117,7 @@ default_args = {
 
 # NOTE: DAG declaration - using a Context Manager (an implicit way)
 with DAG(
-    dag_id="data_ingestion_gcs_dag_GITHUB_DATA_33",
+    dag_id="data_ingestion_gcs_dag_GITHUB_DATA_34",
     schedule_interval='15 * * * *',
     default_args=default_args,
     catchup=True,
