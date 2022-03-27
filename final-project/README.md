@@ -124,7 +124,8 @@ Run locally:
 ```sh
 cd airflow
 
-#review .env file to ensure your credentials are correct.
+#review .env file. 
+#Ensure your google credentials are correct. This file must exist: ~/.google/credentials/google_credentials.json.
 
 docker-compose up
 
@@ -169,7 +170,7 @@ docker run --rm --name spark_3_1_datamech -it spark_3_1_datamech
 
 Visualizations are done using Google Data Studio and they update in realtime (every hour once data is ingested from GitHub).
 
-https://datastudio.google.com/s/nghliFHpXT8
+View visualization Live: https://datastudio.google.com/s/urfSamU8nfQ
 
 ![image](https://user-images.githubusercontent.com/3721810/160254857-307a0896-15a2-4ec5-9917-6f5edf5efd56.png)
 
