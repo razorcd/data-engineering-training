@@ -181,6 +181,6 @@ Deploayed to Cloud following the "Steps to reproduce" from above.
 
 I used GCP Compute Engine as a virtual machine instance. All docker images running together.
 
-![image](https://user-images.githubusercontent.com/3721810/160303847-ea386798-9506-4636-8f5e-a6c4f3a26088.png)
+![image](https://user-images.githubusercontent.com/3721810/160302367-dd8f1186-2678-4bd1-8304-1e5c3089cae3.png)
 
 
